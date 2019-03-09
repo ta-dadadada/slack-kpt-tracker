@@ -14,6 +14,33 @@ type Users struct {
 	SlackId   string `gorm:"type:varchar(100);unique_index"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	Keeps     []Keeps `gorm:"foreignkey:UserID"`
+	Problems  []Keeps `gorm:"foreignkey:UserID"`
+	Trys      []Keeps `gorm:"foreignkey:UserID"`
+}
+
+type Keeps struct {
+	KeepID    uint `gorm:"primary_key"`
+	UserID    uint
+	Body      string `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type Problems struct {
+	ProblemID uint `gorm:"primary_key"`
+	UserID    uint
+	Body      string `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type Trys struct {
+	TryID     uint `gorm:"primary_key"`
+	UserID    uint
+	Body      string `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type DBConfig struct {
@@ -50,7 +77,6 @@ func (c DBConfig) asString() (str string) {
 
 func connectDB() (db *gorm.DB, err error) {
 	conf := getDBConfig().asString()
-	fmt.Println(conf)
 	db, err = gorm.Open("mysql", conf)
 	db.LogMode(true)
 	return
@@ -59,7 +85,10 @@ func connectDB() (db *gorm.DB, err error) {
 func Migrate() {
 	db, _ := connectDB()
 	defer db.Close()
-	db.AutoMigrate(&Users{})
+	db.AutoMigrate(&Users{}, &Keeps{}, &Problems{}, &Trys{})
+	db.Model(&Keeps{}).AddForeignKey("user_id", "users(user_id)", "CASCADE", "CASCADE")
+	db.Model(&Problems{}).AddForeignKey("user_id", "users(user_id)", "CASCADE", "CASCADE")
+	db.Model(&Trys{}).AddForeignKey("user_id", "users(user_id)", "CASCADE", "CASCADE")
 }
 
 func GetUser(userId int) (user Users) {
