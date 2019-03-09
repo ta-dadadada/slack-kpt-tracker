@@ -26,7 +26,7 @@ go言語でKPTできるslackbotをつくる
 
 フレームワーク
 
-* web: 
+* web 
   * [goa](https://github.com/goadesign/goa)
     * swagger対応してるらしい
   * [gin](https://github.com/gin-gonic/gin)
@@ -68,6 +68,7 @@ go言語でKPTできるslackbotをつくる
 * Swagger API Document を生成する
 * slack-messaging-API、データ管理APIそれぞれにウェブサーバを置いて完全なマイクロサービス
 * テストコードを書く
+* SSL通信
 * CI
 * ユーザ情報をキャッシュするために Redis を準備する
 
