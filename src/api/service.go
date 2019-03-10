@@ -91,3 +91,38 @@ func GetKeepList(userID int) ([]Keeps, error) {
 	}
 	return *keeps, err
 }
+
+func CreateProblem(userID int, body string) (*Problems, error) {
+	db, err := ConnectDB()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer db.Close()
+	problem := &Problems{
+		UserID: userID,
+		Body:   body,
+	}
+	err = db.Create(problem).Error
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return problem, err
+}
+
+func GetProblemList(userID int) ([]Problems, error) {
+	db, err := ConnectDB()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer db.Close()
+	problems := &[]Problems{}
+	err = db.Where(Problems{UserID: userID}).Find(problems).Error
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return *problems, err
+}
