@@ -6,8 +6,36 @@ import (
 	"github.com/nlopes/slack"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 )
+
+var keepRex = regexp.MustCompile(`<.+>\skeep[\s　](.+)`)
+
+func generateKeepMessage(user *Users, inText string) (outText string) {
+	matches := keepRex.FindAllStringSubmatch(inText, -1)
+	if len(matches) > 0 && matches[0][1] != "" {
+		keepThing := matches[0][1]
+		keep, err := CreateKeep(user.UserID, keepThing)
+		if err != nil {
+			outText = "Keepの記録に失敗しました"
+			return
+		}
+		outText = fmt.Sprintf("Keepを記録しました: `%v`", keep.Body)
+		return
+	}
+	outText = ""
+	return
+}
+
+func getReplyMessage(user *Users, data slack.MessageEvent) (replyMessage string) {
+	text := data.Text
+	replyMessage = generateKeepMessage(user, text)
+	if replyMessage == "" {
+		replyMessage = "わからん"
+	}
+	return
+}
 
 func run(cli *slack.Client) int {
 	// botIDは不変なんだろうか・・・？
@@ -27,8 +55,9 @@ func run(cli *slack.Client) int {
 					if err != nil {
 						log.Fatal(fmt.Sprintf("データの取得できないSlackユーザ: %v", data.User))
 					} else {
-						GetOrCreateUser(userInfo.Profile.DisplayName, userInfo.ID)
-						text := fmt.Sprintf("%v さんを登録しました", userInfo.Profile.DisplayName)
+						user := GetOrCreateUser(
+							userInfo.Profile.DisplayName, userInfo.ID)
+						text := getReplyMessage(user, data)
 						rtm.SendMessage(rtm.NewOutgoingMessage(text, ev.Channel))
 					}
 				}
@@ -42,6 +71,7 @@ func run(cli *slack.Client) int {
 }
 
 func main() {
+	Migrate()
 	token := os.Getenv("SLACK_TOKEN")
 	cli := slack.New(token)
 	run(cli)
