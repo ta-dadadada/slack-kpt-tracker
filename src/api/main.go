@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/nlopes/slack"
 	"log"
-	"os"
 	"regexp"
 	"strings"
 )
@@ -180,7 +179,8 @@ func run(cli *slack.Client) int {
 
 func main() {
 	Migrate()
-	token := os.Getenv("SLACK_TOKEN")
-	cli := slack.New(token)
-	run(cli)
+	//token := os.Getenv("SLACK_TOKEN")
+	//cli := slack.New(token)
+	//run(cli)
+	RunAPIServer()
 }
