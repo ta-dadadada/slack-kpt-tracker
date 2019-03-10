@@ -11,14 +11,14 @@ import (
 )
 
 var keepRex = regexp.MustCompile(`<.+>\skeep[\s　](.+)`)
+var problemRex = regexp.MustCompile(`<.+>\sproblem[\s　](.+)`)
 
 // FIXME リファクタ。ネストやばすぎ
 func generateKeepMessage(user *Users, inText string) (outText string) {
 	matches := keepRex.FindAllStringSubmatch(inText, -1)
 	if len(matches) > 0 && matches[0][1] != "" {
-		keepThing := matches[0][1]
-		fmt.Printf("\"%v\"", keepThing)
-		if keepThing == "list" {
+		body := matches[0][1]
+		if body == "list" {
 			keeps, err := GetKeepList(user.UserID)
 			if err != nil {
 				log.Fatal(err)
@@ -39,7 +39,7 @@ func generateKeepMessage(user *Users, inText string) (outText string) {
 			outText = sb.String()
 			return
 		}
-		keep, err := CreateKeep(user.UserID, keepThing)
+		keep, err := CreateKeep(user.UserID, body)
 		if err != nil {
 			outText = "Keepの記録に失敗しました"
 			return
@@ -51,12 +51,55 @@ func generateKeepMessage(user *Users, inText string) (outText string) {
 	return
 }
 
+// FIXME リファクタ。ネストやばすぎ
+func generateProblemMessage(user *Users, inText string) (outText string) {
+	matches := problemRex.FindAllStringSubmatch(inText, -1)
+	if len(matches) > 0 && matches[0][1] != "" {
+		body := matches[0][1]
+		if body == "list" {
+			keeps, err := GetProblemList(user.UserID)
+			if err != nil {
+				log.Fatal(err)
+				outText = "Problemの取得に失敗しました"
+				return
+			}
+			if len(keeps) == 0 {
+				outText = "Problemが登録されていません"
+				return
+			}
+			// FIXME 読みやすさ重視。GOの文字列結合コスト的にどうなのか不明
+			sb := strings.Builder{}
+			sb.WriteString("PROBLEM\n============\n")
+			for i, problem := range keeps {
+				sb.WriteString(
+					fmt.Sprintf("%v. %v\n", i+1, problem.Body))
+			}
+			outText = sb.String()
+			return
+		}
+		keep, err := CreateProblem(user.UserID, body)
+		if err != nil {
+			outText = "Problemの記録に失敗しました"
+			return
+		}
+		outText = fmt.Sprintf("Problemを記録しました: `%v`", keep.Body)
+		return
+	}
+	outText = ""
+	return
+}
+
 func getReplyMessage(user *Users, data slack.MessageEvent) (replyMessage string) {
 	text := data.Text
-	replyMessage = generateKeepMessage(user, text)
-	if replyMessage == "" {
-		replyMessage = "わからん"
+	if replyMessage = generateKeepMessage(user, text); replyMessage != "" {
+		return
 	}
+	if replyMessage = generateProblemMessage(user, text); replyMessage != "" {
+		return
+	}
+	replyMessage = "使い方\n" + "====================\n" +
+		"`@this_bot [keep|problem] hoge`: hogeを登録します\n" +
+		"`@this_bot [keep|problem] list`: リストを取得します\n"
 	return
 }
 
