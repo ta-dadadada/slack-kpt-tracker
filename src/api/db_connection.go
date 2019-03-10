@@ -17,7 +17,7 @@ type ConnectionConfig struct {
 // TODO コンテナ化したら環境変数から読み込むようにする
 func getDBConfig() (conf ConnectionConfig) {
 	conf = ConnectionConfig{
-		HOST:     "127.0.0.1",
+		HOST:     "db",
 		PORT:     3306,
 		USER:     "api",
 		PASSWORD: "api",
