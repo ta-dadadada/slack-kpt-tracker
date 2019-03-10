@@ -75,3 +75,19 @@ func CreateKeep(userID int, body string) (*Keeps, error) {
 	}
 	return keep, err
 }
+
+func GetKeepList(userID int) ([]Keeps, error) {
+	db, err := ConnectDB()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer db.Close()
+	keeps := &[]Keeps{}
+	err = db.Where(Keeps{UserID: userID}).Find(keeps).Error
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return *keeps, err
+}

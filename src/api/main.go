@@ -12,10 +12,33 @@ import (
 
 var keepRex = regexp.MustCompile(`<.+>\skeep[\s　](.+)`)
 
+// FIXME リファクタ。ネストやばすぎ
 func generateKeepMessage(user *Users, inText string) (outText string) {
 	matches := keepRex.FindAllStringSubmatch(inText, -1)
 	if len(matches) > 0 && matches[0][1] != "" {
 		keepThing := matches[0][1]
+		fmt.Printf("\"%v\"", keepThing)
+		if keepThing == "list" {
+			keeps, err := GetKeepList(user.UserID)
+			if err != nil {
+				log.Fatal(err)
+				outText = "keepの取得に失敗しました"
+				return
+			}
+			if len(keeps) == 0 {
+				outText = "keepが登録されていません"
+				return
+			}
+			// FIXME 読みやすさ重視。GOの文字列結合コスト的にどうなのか不明
+			sb := strings.Builder{}
+			sb.WriteString("KEEP\n============\n")
+			for i, keep := range keeps {
+				sb.WriteString(
+					fmt.Sprintf("%v. %v\n", i+1, keep.Body))
+			}
+			outText = sb.String()
+			return
+		}
 		keep, err := CreateKeep(user.UserID, keepThing)
 		if err != nil {
 			outText = "Keepの記録に失敗しました"
