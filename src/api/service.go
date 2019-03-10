@@ -126,3 +126,38 @@ func GetProblemList(userID int) ([]Problems, error) {
 	}
 	return *problems, err
 }
+
+func CreateTry(userID int, body string) (*Trys, error) {
+	db, err := ConnectDB()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer db.Close()
+	try := &Trys{
+		UserID: userID,
+		Body:   body,
+	}
+	err = db.Create(try).Error
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return try, err
+}
+
+func GetTryList(userID int) ([]Trys, error) {
+	db, err := ConnectDB()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer db.Close()
+	tries := &[]Trys{}
+	err = db.Where(Trys{UserID: userID}).Find(tries).Error
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return *tries, err
+}
