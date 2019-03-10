@@ -10,14 +10,14 @@ import (
 	"strings"
 )
 
-var keepRex = regexp.MustCompile(`<.+>\skeep[\s　](.+)`)
-var problemRex = regexp.MustCompile(`<.+>\sproblem[\s　](.+)`)
+var keepRex = regexp.MustCompile(`<.+>\s(?i)(k|keep)[\s　](.+)`)
+var problemRex = regexp.MustCompile(`<.+>\s(?i)(p|problem)[\s　](.+)`)
 
 // FIXME リファクタ。ネストやばすぎ
 func generateKeepMessage(user *Users, inText string) (outText string) {
 	matches := keepRex.FindAllStringSubmatch(inText, -1)
-	if len(matches) > 0 && matches[0][1] != "" {
-		body := matches[0][1]
+	if len(matches) > 0 && matches[0][2] != "" {
+		body := matches[0][2]
 		if body == "list" {
 			keeps, err := GetKeepList(user.UserID)
 			if err != nil {
@@ -54,8 +54,8 @@ func generateKeepMessage(user *Users, inText string) (outText string) {
 // FIXME リファクタ。ネストやばすぎ
 func generateProblemMessage(user *Users, inText string) (outText string) {
 	matches := problemRex.FindAllStringSubmatch(inText, -1)
-	if len(matches) > 0 && matches[0][1] != "" {
-		body := matches[0][1]
+	if len(matches) > 0 && matches[0][2] != "" {
+		body := matches[0][2]
 		if body == "list" {
 			keeps, err := GetProblemList(user.UserID)
 			if err != nil {
@@ -98,7 +98,7 @@ func getReplyMessage(user *Users, data slack.MessageEvent) (replyMessage string)
 		return
 	}
 	replyMessage = "使い方\n" + "====================\n" +
-		"`@this_bot [keep|problem] hoge`: hogeを登録します\n" +
+		"`@this_bot [keep|problem] hoge`: hogeを登録します。 `K` `p` など省略表記できます\n" +
 		"`@this_bot [keep|problem] list`: リストを取得します\n"
 	return
 }
