@@ -31,8 +31,8 @@ DROP TABLE IF EXISTS `keeps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `keeps` (
-  `keep_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned DEFAULT NULL,
+  `keep_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `body` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -50,8 +50,8 @@ DROP TABLE IF EXISTS `problems`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `problems` (
-  `problem_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned DEFAULT NULL,
+  `problem_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `body` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -69,8 +69,8 @@ DROP TABLE IF EXISTS `trys`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `trys` (
-  `try_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned DEFAULT NULL,
+  `try_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `body` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -88,7 +88,7 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `slack_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -107,4 +107,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-09 22:45:54
+-- Dump completed on 2019-03-10 10:42:43
