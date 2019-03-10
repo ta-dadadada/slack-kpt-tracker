@@ -11,7 +11,7 @@ import (
 	"net/url"
 )
 
-const HOST = "http://127.0.0.1:8080"
+const HOST = "http://api:8080"
 
 func GetOrCreateUser(userName string, slackID string) (*Users, error) {
 	params := url.Values{}

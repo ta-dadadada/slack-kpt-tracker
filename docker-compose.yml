@@ -34,3 +34,17 @@ services:
       - 8080:8080
     networks:
       - default
+  slack:
+    image: myslack:latest
+    build:
+      context: ./
+      dockerfile: ./docker/slack/Dockerfile
+    depends_on:
+      - api
+    networks:
+      - default
+    secrets:
+      - slack_token
+secrets:
+  slack_token:
+    file: ./docker/slack/token.txt
