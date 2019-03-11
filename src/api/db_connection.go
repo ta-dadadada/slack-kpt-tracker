@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"os"
+	"strconv"
 )
 
 type ConnectionConfig struct {
@@ -14,13 +16,16 @@ type ConnectionConfig struct {
 	OPTIONS  string
 }
 
-// TODO コンテナ化したら環境変数から読み込むようにする
 func getDBConfig() (conf ConnectionConfig) {
+	host := os.Getenv("DB_HOST")
+	port, _ := strconv.Atoi(os.Getenv("DB_PORT"))
+	user := os.Getenv("DB_USER")
+	passwd := os.Getenv("DB_PASSWORD")
 	conf = ConnectionConfig{
-		HOST:     "db",
-		PORT:     3306,
-		USER:     "api",
-		PASSWORD: "api",
+		HOST:     host,
+		PORT:     port,
+		USER:     user,
+		PASSWORD: passwd,
 		DATABASE: "kpt",
 		OPTIONS:  "parseTime=true",
 	}
